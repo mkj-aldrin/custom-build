@@ -4,13 +4,27 @@
   padding: 0;
 }
 
+:root {
+  --space-0: 2px;
+  --space-1: 4px;
+}
+
+:root {
+  --col-base-hue: 30;
+  --col-black: var(--col-base-hue) 0% 15%;
+  --col-white: var(--col-base-hue) 10% 98.5%;
+  --col-primary: 30 100% 50%;
+  --col-secondary: 210 80% 60%;
+}
+
 html,
 body {
   height: 100%;
 }
 
 body {
-  font-family: sans-serif;
+  font-family: "IBM Plex Mono", monospace;
+  font-weight: 400;
   grid-template-columns: 1fr;
   grid-template-rows: 1fr;
 }

@@ -1,4 +1,4 @@
-import { attach_drag, Draggable } from "./drag";
+import { attach_drag } from "./drag";
 
 export class Xmodule extends HTMLElement {
   index: number;
@@ -8,7 +8,6 @@ export class Xmodule extends HTMLElement {
     super();
     this.index = 0;
     this.type = "";
-    attach_drag.call(this);
-    // this.tagName = "X-MODULE";
+    attach_drag(this);
   }
 }

@@ -1,4 +1,5 @@
 import { Xchain } from "../app/custom-elements/chain";
+import { IndexList } from "../app/custom-elements/index-list";
 import { Xmodule } from "../app/custom-elements/module";
 import { Xout } from "../app/custom-elements/out";
 import { Xparamter } from "../app/custom-elements/parameter";
@@ -28,6 +29,7 @@ declare global {
     "x-module": Xmodule;
     "x-parameter": Xparamter;
     "x-out": Xout;
+    "index-list": IndexList;
   }
 }
 

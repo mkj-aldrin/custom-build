@@ -1,5 +1,6 @@
 import { build_chain, build_module, build_out } from "./build";
 import "./custom-elements";
+import { attach_drag_section } from "./custom-elements/drag";
 
 const init_arr = [
   {
@@ -19,8 +20,15 @@ const init_arr = [
 
 const appEl = document.createElement("div");
 appEl.id = "app";
+
 const xRoot = document.createElement("x-root");
 appEl.appendChild(xRoot);
+
+const chains_list = document.createElement("index-list");
+chains_list.classList.add("chains");
+// attach_drag_section(chains_list);
+
+xRoot.appendChild(chains_list);
 document.body.appendChild(appEl);
 
 init_arr.forEach((chain) => {
@@ -33,7 +41,7 @@ init_arr.forEach((chain) => {
       moduleEl.querySelector("index-list.outs")?.appendChild(outEl);
     });
   });
-  xRoot.appendChild(chainEl);
+  chains_list.appendChild(chainEl);
 });
 
 // class A {

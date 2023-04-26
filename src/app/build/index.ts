@@ -19,10 +19,12 @@ export function build_parameter({}) {
   return el;
 }
 
+let out_uuid = 0;
+
 export function build_out({ index = 0 }: { index: number }) {
   const el = document.createElement("x-out");
   el.innerHTML = `
-  <span>out: ${index}</span>
+  <span>out : ${out_uuid++}</span>
   `;
   return el;
 }

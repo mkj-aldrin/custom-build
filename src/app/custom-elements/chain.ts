@@ -6,6 +6,6 @@ export class Xchain extends HTMLElement {
   constructor() {
     super();
     this.index = 0;
-    attach_drag.call(this);
+    attach_drag(this);
   }
 }

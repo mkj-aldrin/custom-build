@@ -2,9 +2,9 @@ x-root,
 x-chain,
 x-module,
 x-out {
-  border: 1px #0003 solid;
   padding: 2px;
   border-radius: 2px;
+  border: 1px solid hsl(var(--col-black) / 0.2);
 }
 
 x-root,
@@ -17,12 +17,33 @@ index-list {
 
 x-chain,
 x-module,
-index-list {
+index-list.modules,
+index-list.outs {
   flex-direction: column;
 }
 
+index-list.chains {
+  flex-grow: 1;
+}
+
 x-module {
-  cursor: grab;
+  padding: var(--space-1);
+  background: hsl(var(--col-white) / 0.7);
+  box-shadow: 0 0 8px 0 hsl(0 0% 0% / 0.1);
+}
+
+x-root.dragging,
+x-root.dragging com-module {
+  cursor: grabbing;
+}
+x-root.dragging com-module-list {
+  --col: var(--col-primary) / 0.5;
+}
+x-module {
   user-select: none;
-  box-shadow: 0 0 8px 0 #0002;
+  cursor: grab;
+}
+.drag {
+  color: hsl(var(--col-primary));
+  pointer-events: none;
 }
