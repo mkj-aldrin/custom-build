@@ -1,0 +1,28 @@
+x-root,
+x-chain,
+x-module,
+x-out {
+  border: 1px #0003 solid;
+  padding: 2px;
+  border-radius: 2px;
+}
+
+x-root,
+x-chain,
+x-module,
+index-list {
+  display: flex;
+  gap: 2px;
+}
+
+x-chain,
+x-module,
+index-list {
+  flex-direction: column;
+}
+
+x-module {
+  cursor: grab;
+  user-select: none;
+  box-shadow: 0 0 8px 0 #0002;
+}

@@ -1,0 +1,12 @@
+{
+  "source": "src/index.html",
+  "scripts": {
+    "start": "parcel"
+  },
+  "devDependencies": {
+    "parcel": "latest"
+  },
+  "keywords": [],
+  "name": "custom-build",
+  "description": ""
+}
