@@ -1,6 +1,7 @@
 export function build_chain() {
   const el = document.createElement("x-chain");
   el.innerHTML = `
+  <index-list class="modules"></index-list>
   `;
   return el;
 }

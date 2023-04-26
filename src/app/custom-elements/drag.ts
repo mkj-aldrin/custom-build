@@ -1,4 +1,3 @@
-import { Xchain } from "./chain";
 import { Xmodule } from "./module";
 import { Xout } from "./out";
 
@@ -41,14 +40,6 @@ export function attach_drag() {
     e.detail.context[this.tagName] = this;
   });
 }
-
-// export class Draggable extends HTMLElement {
-//   constructor() {
-//     super();
-
-//     attach_drag.call(this);
-//   }
-// }
 
 export class DragRoot extends HTMLElement {
   dragEl: Xmodule | Xout | null;

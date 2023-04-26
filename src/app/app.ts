@@ -27,10 +27,10 @@ init_arr.forEach((chain) => {
   const chainEl = build_chain();
   chain.modules.forEach((module) => {
     const moduleEl = build_module(module);
-    chainEl.appendChild(moduleEl);
+    chainEl.querySelector("index-list.modules")?.appendChild(moduleEl);
     module.outs.forEach((out, index) => {
       const outEl = build_out({ index });
-      moduleEl.querySelector("index-list.outs").appendChild(outEl);
+      moduleEl.querySelector("index-list.outs")?.appendChild(outEl);
     });
   });
   xRoot.appendChild(chainEl);
