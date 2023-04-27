@@ -58,7 +58,6 @@ export function attach_drag<T extends HTMLElement>(target: T) {
 const enterDebounce = debouce(100);
 
 export class DragRoot extends HTMLElement {
-
   dragEl: Xmodule | Xout | null;
   dragContext: {};
   constructor() {
@@ -69,7 +68,6 @@ export class DragRoot extends HTMLElement {
       this.dragEl = e.target;
       this.dragContext = e.detail.context;
       // console.log(this.dragContext);
-
 
       this.classList.add("dragging");
       this.dragEl.classList.add("drag");
@@ -95,19 +93,16 @@ export class DragRoot extends HTMLElement {
 
       const { target: enterEl, detail } = e;
 
-
       switch (enterEl.tagName) {
         case "X-MODULE": {
           enterDebounce.clear();
 
           if (this.dragEl.tagName == "X-OUT") {
-            console.log(detail.context, enterEl, this.dragContext);
-
-            if (enterEl == this.dragContext['X-MODULE']) return
+            if (enterEl == this.dragContext["X-MODULE"]) return;
+            // console.log(detail.context, enterEl, this.dragContext);
 
             const preBox = this.dragEl.getBoundingClientRect();
             const b = { el: this.dragEl, box: preBox };
-
 
             const dragBoxElements: { el: Xmodule; box: DOMRect }[] = [];
             this.querySelectorAll("x-module").forEach((m) => {
@@ -124,8 +119,12 @@ export class DragRoot extends HTMLElement {
             };
 
             ani(b);
-            dragBoxElements.forEach(ani)
+            dragBoxElements.forEach(ani);
 
+            this.dragContext = {
+              ...detail.context,
+              "X-MODULE": enterEl,
+            };
             break;
           }
 
@@ -141,7 +140,6 @@ export class DragRoot extends HTMLElement {
             dragBoxElements.push({ el: m, box });
           });
 
-
           enterEl.insertAdjacentElement(insertPosition, this.dragEl);
 
           const box = this.dragEl.getBoundingClientRect();
@@ -153,10 +151,6 @@ export class DragRoot extends HTMLElement {
           dragBoxElements.forEach(ani);
 
           // break;
-          this.dragContext = {
-            ...detail.context,
-            "X-MODULE": enterEl
-          }
         }
         case "X-OUT": {
           enterDebounce.clear();
@@ -200,13 +194,6 @@ export class DragRoot extends HTMLElement {
           });
         }
       }
-
-      // const box = this.dragEl.getBoundingClientRect();
-      // this.dragEl.dragPossition = {
-      //   x: box.left + box.width / 2,
-      //   y: box.top + box.height / 2,
-      // };
-
     });
 
     this.addEventListener("pointerup", (e) => {
