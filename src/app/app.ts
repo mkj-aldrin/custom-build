@@ -1,5 +1,6 @@
 import { build_chain, build_module, build_out } from "./build";
 import "./custom-elements";
+import { attach_drag_root } from "./custom-elements/drag";
 // import { attach_drag_section } from "./custom-elements/drag";
 
 const init_arr = [
@@ -22,6 +23,13 @@ const appEl = document.createElement("div");
 appEl.id = "app";
 
 const xRoot = document.createElement("x-root");
+attach_drag_root(xRoot, {
+  "X-OUT": (drag_el, drag_context) => {},
+  "X-MODULE": (drag_el, drag_context) => {
+
+  },
+  "X-CHAIN": (drag_el, drag_context) => {},
+});
 appEl.appendChild(xRoot);
 
 const chains_list = document.createElement("index-list");

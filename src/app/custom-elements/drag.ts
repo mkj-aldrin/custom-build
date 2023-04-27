@@ -1,4 +1,5 @@
 import { debouce } from "../../tools/timing";
+import { X } from "../../types/global";
 import { ani, move } from "../animations/flip";
 import { build_module } from "../build";
 import { Xmodule } from "./module";
@@ -57,8 +58,41 @@ export function attach_drag<T extends HTMLElement>(target: T) {
 
 const enterDebounce = debouce(100);
 
-export class DragRoot extends HTMLElement {
+type CallBackMap = Record<
+  X.DragEvent["target"]["tagName"],
+  <T extends HTMLElement>(
+    drag_el: T,
+    drag_context: Record<
+      X.DragEvent["target"]["tagName"],
+      X.DragEvent["target"]
+    >
+  ) => void
+>;
 
+export function attach_drag_root<T extends HTMLElement>(
+  target: T,
+  callbackMap: CallBackMap
+) {
+  target.drag_el = null;
+  target.drag_context = {};
+
+  target.addEventListener("drag:down", (e) => {
+    target.drag_el = e.target;
+    target.drag_context = e.detail.context;
+  });
+  target.addEventListener("drag:enter", (e) => {
+    if (!target.drag_el) return;
+    if (target.drag_el == e.target) return;
+
+    const enter_target = e.target;
+
+    callbackMap[enter_target.tagName](target.drag_el, target.drag_context, e);
+
+    target.drag_context = { ...e.detail.context, [target.tagName]: target };
+  });
+}
+
+export class DragRoot extends HTMLElement {
   dragEl: Xmodule | Xout | null;
   dragContext: {};
   constructor() {
@@ -69,7 +103,6 @@ export class DragRoot extends HTMLElement {
       this.dragEl = e.target;
       this.dragContext = e.detail.context;
       // console.log(this.dragContext);
-
 
       this.classList.add("dragging");
       this.dragEl.classList.add("drag");
@@ -95,7 +128,6 @@ export class DragRoot extends HTMLElement {
 
       const { target: enterEl, detail } = e;
 
-
       switch (enterEl.tagName) {
         case "X-MODULE": {
           enterDebounce.clear();
@@ -103,11 +135,10 @@ export class DragRoot extends HTMLElement {
           if (this.dragEl.tagName == "X-OUT") {
             console.log(detail.context, enterEl, this.dragContext);
 
-            if (enterEl == this.dragContext['X-MODULE']) return
+            if (enterEl == this.dragContext["X-MODULE"]) return;
 
             const preBox = this.dragEl.getBoundingClientRect();
             const b = { el: this.dragEl, box: preBox };
-
 
             const dragBoxElements: { el: Xmodule; box: DOMRect }[] = [];
             this.querySelectorAll("x-module").forEach((m) => {
@@ -124,7 +155,7 @@ export class DragRoot extends HTMLElement {
             };
 
             ani(b);
-            dragBoxElements.forEach(ani)
+            dragBoxElements.forEach(ani);
 
             break;
           }
@@ -141,7 +172,6 @@ export class DragRoot extends HTMLElement {
             dragBoxElements.push({ el: m, box });
           });
 
-
           enterEl.insertAdjacentElement(insertPosition, this.dragEl);
 
           const box = this.dragEl.getBoundingClientRect();
@@ -155,8 +185,8 @@ export class DragRoot extends HTMLElement {
           // break;
           this.dragContext = {
             ...detail.context,
-            "X-MODULE": enterEl
-          }
+            "X-MODULE": enterEl,
+          };
         }
         case "X-OUT": {
           enterDebounce.clear();
@@ -206,7 +236,6 @@ export class DragRoot extends HTMLElement {
       //   x: box.left + box.width / 2,
       //   y: box.top + box.height / 2,
       // };
-
     });
 
     this.addEventListener("pointerup", (e) => {

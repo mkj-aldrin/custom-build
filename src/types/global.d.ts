@@ -6,7 +6,7 @@ import { Xparamter } from "../app/custom-elements/parameter";
 import { Xroot } from "../app/custom-elements/root";
 
 declare namespace X {
-  interface DragEvent
+  export interface DragEvent
     extends CustomEvent<{
       context: {};
     }> {
