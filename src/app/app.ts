@@ -1,11 +1,11 @@
 import { build_chain, build_module, build_out } from "./build";
 import "./custom-elements";
-import { attach_drag_section } from "./custom-elements/drag";
+// import { attach_drag_section } from "./custom-elements/drag";
 
 const init_arr = [
   {
     modules: [
-      { type: "PTH", outs: [] },
+      { type: "PTH", outs: [1] },
       { type: "LFO", outs: [] },
       { type: "PRO", outs: [] },
     ],

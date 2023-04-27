@@ -44,6 +44,8 @@ export function attach_drag<T extends HTMLElement>(target: T) {
 
   target.addEventListener("drag:down", (e) => {
     if (e.target == target) return;
+    // console.log(target);
+
     e.detail.context[target.tagName] = target;
   });
 
@@ -53,27 +55,10 @@ export function attach_drag<T extends HTMLElement>(target: T) {
   });
 }
 
-// export function attach_drag_section<T extends HTMLElement>(target: T) {
-//   target.addEventListener("pointerenter", (e) => {
-//     target.dispatchEvent(
-//       new CustomEvent("drag:enter", {
-//         bubbles: true,
-//         detail: {
-//           context: {},
-//         },
-//       })
-//     );
-//   });
-//
-//   target.addEventListener("drag:enter", (e) => {
-//     if (e.target == target) return;
-//     e.detail.context[target.tagName] = target;
-//   });
-// }
-
 const enterDebounce = debouce(100);
 
 export class DragRoot extends HTMLElement {
+
   dragEl: Xmodule | Xout | null;
   dragContext: {};
   constructor() {
@@ -83,6 +68,8 @@ export class DragRoot extends HTMLElement {
       if (e.target.tagName == "X-CHAIN") return;
       this.dragEl = e.target;
       this.dragContext = e.detail.context;
+      // console.log(this.dragContext);
+
 
       this.classList.add("dragging");
       this.dragEl.classList.add("drag");
@@ -108,13 +95,25 @@ export class DragRoot extends HTMLElement {
 
       const { target: enterEl, detail } = e;
 
+
       switch (enterEl.tagName) {
         case "X-MODULE": {
           enterDebounce.clear();
 
           if (this.dragEl.tagName == "X-OUT") {
+            console.log(detail.context, enterEl, this.dragContext);
+
+            if (enterEl == this.dragContext['X-MODULE']) return
+
             const preBox = this.dragEl.getBoundingClientRect();
             const b = { el: this.dragEl, box: preBox };
+
+
+            const dragBoxElements: { el: Xmodule; box: DOMRect }[] = [];
+            this.querySelectorAll("x-module").forEach((m) => {
+              const box = m.getBoundingClientRect();
+              dragBoxElements.push({ el: m, box });
+            });
 
             enterEl.querySelector("index-list").appendChild(this.dragEl);
 
@@ -125,6 +124,7 @@ export class DragRoot extends HTMLElement {
             };
 
             ani(b);
+            dragBoxElements.forEach(ani)
 
             break;
           }
@@ -141,16 +141,8 @@ export class DragRoot extends HTMLElement {
             dragBoxElements.push({ el: m, box });
           });
 
-          // const enterBoxElements: { el: COMModule; box: DOMRect }[] = [];
-          // if (!sameChain) {
-          //   chain.querySelectorAll("com-module").forEach((m) => {
-          //     const box = m.getBoundingClientRect();
-          //     enterBoxElements.push({ el: m, box });
-          //   });
-          // }
 
           enterEl.insertAdjacentElement(insertPosition, this.dragEl);
-          // enterBoxElements.forEach(ani);
 
           const box = this.dragEl.getBoundingClientRect();
           this.dragEl.dragPossition = {
@@ -160,7 +152,11 @@ export class DragRoot extends HTMLElement {
 
           dragBoxElements.forEach(ani);
 
-          break;
+          // break;
+          this.dragContext = {
+            ...detail.context,
+            "X-MODULE": enterEl
+          }
         }
         case "X-OUT": {
           enterDebounce.clear();
@@ -210,6 +206,7 @@ export class DragRoot extends HTMLElement {
       //   x: box.left + box.width / 2,
       //   y: box.top + box.height / 2,
       // };
+
     });
 
     this.addEventListener("pointerup", (e) => {
