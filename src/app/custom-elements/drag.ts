@@ -113,7 +113,19 @@ export class DragRoot extends HTMLElement {
           enterDebounce.clear();
 
           if (this.dragEl.tagName == "X-OUT") {
+            const preBox = this.dragEl.getBoundingClientRect();
+            const b = { el: this.dragEl, box: preBox };
+
             enterEl.querySelector("index-list").appendChild(this.dragEl);
+
+            const box = this.dragEl.getBoundingClientRect();
+            this.dragEl.dragPossition = {
+              x: box.left + box.width / 2,
+              y: box.top + box.height / 2,
+            };
+
+            ani(b);
+
             break;
           }
 

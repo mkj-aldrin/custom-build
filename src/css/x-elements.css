@@ -32,6 +32,12 @@ x-module {
   box-shadow: 0 0 8px 0 hsl(0 0% 0% / 0.1);
 }
 
+x-out {
+  border-style: dashed;
+  font-size: 0.75em;
+}
+
+/* dragging */
 x-root.dragging,
 x-root.dragging com-module {
   cursor: grabbing;
