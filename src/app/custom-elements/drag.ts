@@ -65,7 +65,8 @@ type CallBackMap = Record<
     drag_context: Record<
       X.DragEvent["target"]["tagName"],
       X.DragEvent["target"]
-    >
+    >,
+    e: X.DragEvent
   ) => void
 >;
 
@@ -80,6 +81,7 @@ export function attach_drag_root<T extends HTMLElement>(
     target.drag_el = e.target;
     target.drag_context = e.detail.context;
   });
+
   target.addEventListener("drag:enter", (e) => {
     if (!target.drag_el) return;
     if (target.drag_el == e.target) return;
@@ -89,6 +91,11 @@ export function attach_drag_root<T extends HTMLElement>(
     callbackMap[enter_target.tagName](target.drag_el, target.drag_context, e);
 
     target.drag_context = { ...e.detail.context, [target.tagName]: target };
+  });
+
+  target.addEventListener("pointerup", (e) => {
+    target.drag_el = null;
+    target.drag_context = {};
   });
 }
 

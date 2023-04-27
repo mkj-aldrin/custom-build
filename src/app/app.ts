@@ -25,8 +25,31 @@ appEl.id = "app";
 const xRoot = document.createElement("x-root");
 attach_drag_root(xRoot, {
   "X-OUT": (drag_el, drag_context) => {},
-  "X-MODULE": (drag_el, drag_context) => {
+  "X-MODULE": (drag_el, drag_context, e) => {
+    const {
+      target: enterEl,
+      detail: { context: enter_context },
+    } = e;
 
+    const enterIndex = enterEl.index;
+    const dragIndex = drag_el.index;
+
+    const insertPosition: InsertPosition =
+      enterIndex > dragIndex ? "afterend" : "beforebegin";
+
+    // const dragBoxElements: { el: Xmodule; box: DOMRect }[] = [];
+    // this.querySelectorAll("x-module").forEach((m) => {
+    //   const box = m.getBoundingClientRect();
+    //   dragBoxElements.push({ el: m, box });
+    // });
+
+    enterEl.insertAdjacentElement(insertPosition, drag_el);
+
+    // const box = this.dragEl.getBoundingClientRect();
+    // this.dragEl.dragPossition = {
+    //   x: box.left + box.width / 2,
+    //   y: box.top + box.height / 2,
+    // };
   },
   "X-CHAIN": (drag_el, drag_context) => {},
 });
@@ -51,32 +74,3 @@ init_arr.forEach((chain) => {
   });
   chains_list.appendChild(chainEl);
 });
-
-// class A {
-//   constructor() {
-//     this.name = "Helo";
-//     this.type = "base";
-//   }
-// }
-
-// class B {
-//   constructor() {
-//     this.type = "Cat";
-//   }
-// }
-
-// class C {
-//   constructor() {
-//     this.value = 123;
-
-//     Object.assign(this, new A());
-//     Object.assign(this, new B());
-//   }
-
-//   say() {
-//     console.log(this.name, this.type, this.value);
-//   }
-// }
-
-// const c0 = new C();
-// c0.say();
