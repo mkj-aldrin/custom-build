@@ -2,8 +2,10 @@ import { debouce } from "../../tools/timing";
 import { X } from "../../types/global";
 import { ani, move } from "../animations/flip";
 import { build_module } from "../build";
+import { Xchain } from "./chain";
 import { Xmodule } from "./module";
 import { Xout } from "./out";
+import { Xroot } from "./root";
 
 export function attach_drag<T extends HTMLElement>(target: T) {
   target.dragPosition = {
@@ -52,26 +54,33 @@ export function attach_drag<T extends HTMLElement>(target: T) {
 
   target.addEventListener("drag:enter", (e) => {
     if (e.target == target) return;
+    // console.log(target, target.tagName);
     e.detail.context[target.tagName] = target;
+    // console.log(e.detail.context);
+
   });
 }
 
 const enterDebounce = debouce(100);
 
+type Context = {
+  "X-CHAIN"?: Xchain
+  "X-MODULE"?: Xmodule
+  "X-OUT"?: Xout
+}
+
 type CallBackMap = Record<
   X.DragEvent["target"]["tagName"],
-  <T extends HTMLElement>(
-    drag_el: T,
-    drag_context: Record<
-      X.DragEvent["target"]["tagName"],
-      X.DragEvent["target"]
-    >,
+  (
+    drag_el: Xmodule | Xout,
+    drag_context: Context,
     e: X.DragEvent
   ) => void
 >;
 
-export function attach_drag_root<T extends HTMLElement>(
-  target: T,
+
+export function attach_drag_root(
+  target: Xroot,
   callbackMap: CallBackMap
 ) {
   target.drag_el = null;
@@ -80,6 +89,7 @@ export function attach_drag_root<T extends HTMLElement>(
   target.addEventListener("drag:down", (e) => {
     target.drag_el = e.target;
     target.drag_context = e.detail.context;
+    // console.log(e.type, e.detail.context);
   });
 
   target.addEventListener("drag:enter", (e) => {
@@ -88,9 +98,26 @@ export function attach_drag_root<T extends HTMLElement>(
 
     const enter_target = e.target;
 
+
     callbackMap[enter_target.tagName](target.drag_el, target.drag_context, e);
 
-    target.drag_context = { ...e.detail.context, [target.tagName]: target };
+    target.drag_context = {
+      ...target.drag_context,
+      ...e.detail.context
+    }
+    // if(enter_target.tagName == 'X-MODULE'){
+    //   target.drag_context = e.detail.context
+    // }
+    // if(enter_target.tagName == 'X-CHAIN'){
+    //   // target
+    // }
+    // if(enter_target.tagName == '')
+
+    // console.log(e.type, { ...e.detail.context, [enter_target.tagName]: enter_target });
+    // console.log(e.target, e.detail.context)
+    // target.drag_context = { ...e.detail.context, [enter_target.tagName]: enter_target }
+    // console.log(target.drag_context)
+    // target.drag_context = { ...e.detail.context, [target.tagName]: target };
   });
 
   target.addEventListener("pointerup", (e) => {

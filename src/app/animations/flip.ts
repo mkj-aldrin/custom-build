@@ -19,21 +19,22 @@ export const ani = (obj: { el: Xmodule | Xout; box: DOMRect }) => {
 
   const opt: KeyframeAnimationOptions = {
     easing: easingMap.quintOut,
-    duration: 3000,
+    duration: 550,
     fill: "both",
     composite: "accumulate"
   };
 
   // console.log(posDiff)
   if (posDiff.x || posDiff.y || posDiff.sy) {
-    obj.el.style.pointerEvents = 'none'
-    obj.el.style.transformOrigin = "top left 0"
+    // obj.el.style.pointerEvents = 'none'
+    // obj.el.style.transformOrigin = "top left 0"
   }
 
   obj.el.animate(
     [
       {
-        transform: `scale(${posDiff.sx},${posDiff.sy})`,
+        transform: `translate(${posDiff.x}px,${posDiff.y}px)`,
+        // transform: `scale(${posDiff.sx},${posDiff.sy})`,
         // transform: `translate(${posDiff.x}px,${posDiff.y}px) scale(${posDiff.sx},${posDiff.sy})`,
         // transform: `scale(${posDiff.sx},${posDiff.sy}) translate(${posDiff.x}px,${posDiff.y}px)`,
         // transformOrigin: 'top left',
@@ -44,8 +45,8 @@ export const ani = (obj: { el: Xmodule | Xout; box: DOMRect }) => {
     ],
     opt
   ).onfinish = e => {
-    obj.el.style.removeProperty('pointer-events')
-    obj.el.style.removeProperty('transform-origin')
+    // obj.el.style.removeProperty('pointer-events')
+    // obj.el.style.removeProperty('transform-origin')
   };
 };
 
@@ -56,7 +57,7 @@ export function move(
 ) {
   const opt: KeyframeAnimationOptions = {
     easing: easingMap.quintOut,
-    duration: 3001,
+    duration: 3000,
     fill: "both",
   };
 
