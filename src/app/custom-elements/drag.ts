@@ -57,29 +57,57 @@ export function attach_drag<T extends HTMLElement>(target: T) {
     // console.log(target, target.tagName);
     e.detail.context[target.tagName] = target;
     // console.log(e.detail.context);
-
   });
 }
 
 const enterDebounce = debouce(100);
 
 type Context = {
-  "X-CHAIN"?: Xchain
-  "X-MODULE"?: Xmodule
-  "X-OUT"?: Xout
-}
+  "X-CHAIN"?: Xchain;
+  "X-MODULE"?: Xmodule;
+  "X-OUT"?: Xout;
+};
 
-type CallBackMap = Record<
-  X.DragEvent["target"]["tagName"],
-  (
-    drag_el: Xmodule | Xout,
-    drag_context: Context,
-    e: X.DragEvent
-  ) => void
->;
+type ContextMap<T extends HTMLElement> = {
+  string: T;
+};
 
+// type CallBackMap = Map<
+//   [string, string],
+//   (
+//     drag_el: HTMLElement,
+//     drag_context: ContextMap<HTMLElement>,
+//     ente_el: HTMLElement,
+//     enter_conted: ContextMap<HTMLElement>
+//   ) => void
+// >;
 
-export function attach_drag_root(
+type CallBackMap = {
+  [x in string]: {
+    [y in string]: (
+      drag_el: HTMLElement,
+      drag_context: Context,
+      enter_el: HTMLElement,
+      enter_context: Context,
+      debouce_object: ReturnType<typeof debouce>
+    ) => Promise<boolean>;
+  };
+};
+
+// type CallBackMap = Record<
+//   X.DragEvent["target"]["tagName"],
+//   (
+//     drag_el: Xmodule | Xout,
+//     drag_context: Context,
+//     enter_el: Xmodule | Xout,
+//     enter_context: Context,
+//     insertPosition: InsertPosition
+//   ) => { el: Xmodule | Xout; box: DOMRect }[][]
+// >;
+
+const parent_debouce = debouce(100);
+
+export async function attach_drag_root(
   target: Xroot,
   callbackMap: CallBackMap
 ) {
@@ -89,38 +117,81 @@ export function attach_drag_root(
   target.addEventListener("drag:down", (e) => {
     target.drag_el = e.target;
     target.drag_context = e.detail.context;
-    // console.log(e.type, e.detail.context);
+    e.target.classList.add("drag");
   });
 
-  target.addEventListener("drag:enter", (e) => {
+  target.addEventListener("drag:enter", async (e) => {
     if (!target.drag_el) return;
     if (target.drag_el == e.target) return;
 
     const enter_target = e.target;
 
+    const {
+      target: enter_el,
+      detail: { context: enter_context },
+    } = e;
 
-    callbackMap[enter_target.tagName](target.drag_el, target.drag_context, e);
+    const enterIndex = enter_el.index;
+    const dragIndex = target.drag_el.index;
+
+    const dragParent = target.drag_el.parentElement;
+    const enterParent = enter_el.parentElement;
+
+    const insertPosition: InsertPosition =
+      dragParent != enterParent
+        ? "beforebegin"
+        : enterIndex > dragIndex
+        ? "afterend"
+        : "beforebegin";
+
+    const dragBoxElements: { el: Xmodule; box: DOMRect }[] = [];
+    dragParent.querySelectorAll(target?.drag_el.tagName).forEach((m) => {
+      const box = m.getBoundingClientRect();
+      dragBoxElements.push({ el: m, box });
+    });
+
+    const enterBoxElements: { el: Xmodule; box: DOMRect }[] = [];
+
+    enterParent != dragParent &&
+      enter_el.parentElement.querySelectorAll(enter_el.tagName).forEach((m) => {
+        const box = m.getBoundingClientRect();
+        enterBoxElements.push({ el: m, box });
+      });
+
+    let p = new Promise((res, reject) => {
+      if (enter_el.tagName == target.drag_el.tagName) {
+        parent_debouce.clear();
+        enter_el.insertAdjacentElement(insertPosition, target.drag_el);
+        res(true);
+      } else {
+        !callbackMap[target.drag_el.tagName]
+          ?.[enter_el.tagName]?.(
+            target.drag_el,
+            target.drag_context,
+            enter_el,
+            enter_context,
+            parent_debouce
+          )
+          ?.then((state) => {
+            res(state);
+          }) && res(false);
+      }
+    });
+
+    const res = await p;
+
+    const ani_list = [dragBoxElements, enterBoxElements];
+
+    res && ani_list?.forEach((list) => list.forEach(ani));
 
     target.drag_context = {
       ...target.drag_context,
-      ...e.detail.context
-    }
-    // if(enter_target.tagName == 'X-MODULE'){
-    //   target.drag_context = e.detail.context
-    // }
-    // if(enter_target.tagName == 'X-CHAIN'){
-    //   // target
-    // }
-    // if(enter_target.tagName == '')
-
-    // console.log(e.type, { ...e.detail.context, [enter_target.tagName]: enter_target });
-    // console.log(e.target, e.detail.context)
-    // target.drag_context = { ...e.detail.context, [enter_target.tagName]: enter_target }
-    // console.log(target.drag_context)
-    // target.drag_context = { ...e.detail.context, [target.tagName]: target };
+      ...e.detail.context,
+    };
   });
 
   target.addEventListener("pointerup", (e) => {
+    target.drag_el?.classList.remove("drag");
     target.drag_el = null;
     target.drag_context = {};
   });

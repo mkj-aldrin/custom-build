@@ -50,6 +50,7 @@ x-module {
   cursor: grab;
 }
 .drag {
+  /* z-index: 100; */
   color: hsl(var(--col-primary));
   pointer-events: none;
 }

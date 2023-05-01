@@ -14,14 +14,14 @@ export const ani = (obj: { el: Xmodule | Xout; box: DOMRect }) => {
     x: oldBox.x - newBox.x,
     y: oldBox.y - newBox.y,
     sx: oldBox.width / newBox.width,
-    sy: oldBox.height / newBox.height
+    sy: oldBox.height / newBox.height,
   };
 
   const opt: KeyframeAnimationOptions = {
     easing: easingMap.quintOut,
-    duration: 550,
+    duration: 150,
     fill: "both",
-    composite: "accumulate"
+    composite: "accumulate",
   };
 
   // console.log(posDiff)
@@ -44,7 +44,7 @@ export const ani = (obj: { el: Xmodule | Xout; box: DOMRect }) => {
       },
     ],
     opt
-  ).onfinish = e => {
+  ).onfinish = (e) => {
     // obj.el.style.removeProperty('pointer-events')
     // obj.el.style.removeProperty('transform-origin')
   };

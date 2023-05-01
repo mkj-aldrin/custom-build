@@ -1,19 +1,6 @@
-import { ani } from "./animations/flip";
 import { build_chain, build_module, build_out } from "./build";
 import "./custom-elements";
-import { Xchain } from "./custom-elements/chain";
 import { attach_drag_root } from "./custom-elements/drag";
-import { Xmodule } from "./custom-elements/module";
-import { Xout } from "./custom-elements/out";
-
-// type U = Xchain | Xmodule | Xout
-// type T = {
-//   [x in U['tagName']]? : string
-// }
-
-// const s : T = {
-//   "X-CHAIN": "",
-// }
 
 const init_arr = [
   {
@@ -36,62 +23,54 @@ appEl.id = "app";
 
 const xRoot = document.createElement("x-root");
 attach_drag_root(xRoot, {
-  "X-OUT": (drag_el, drag_context) => {
-
-   },
-  "X-MODULE": (drag_el, drag_context, e) => {
-
-    const {
-      target: enterEl,
-      detail: { context: enter_context },
-    } = e;
-
-
-    const enterIndex = enterEl.index;
-    const dragIndex = drag_el.index;
-
-    const insertPosition: InsertPosition =
-      enterIndex > dragIndex ? "afterend" : "beforebegin";
-
-
-    const dragBoxElements: { el: Xmodule; box: DOMRect }[] = [];
-    drag_context["X-CHAIN"].querySelectorAll("x-module").forEach(m => {
-      const box = m.getBoundingClientRect();
-      dragBoxElements.push({ el: m, box });
-    })
-
-    const enterBoxElements: { el: Xmodule; box: DOMRect }[] = [];
-    enter_context["X-CHAIN"].querySelectorAll("x-module").forEach(m => {
-      const box = m.getBoundingClientRect();
-      enterBoxElements.push({ el: m, box });
-    })
-
-    switch (drag_el.tagName) {
-      case 'X-MODULE':
-        enterEl.insertAdjacentElement(insertPosition, drag_el);
-        break;
-      case 'X-OUT':
-        const outElBox = drag_el.getBoundingClientRect()
-        const aniStruct = { el: drag_el, box: outElBox }
-        enterEl.querySelector("index-list").appendChild(drag_el)
-        ani(aniStruct)
-        break;
-
-      default:
-        break;
-    }
-
-    dragBoxElements.forEach(ani);
-    enterBoxElements.forEach(ani)
-
+  "X-MODULE": {
+    "X-OUT": (drag_el, drag_context, enter_el, enter_context) => {},
+    "X-CHAIN": (
+      drag_el,
+      drag_context,
+      enter_el,
+      enter_context,
+      debouce_object
+    ) => {
+      return new Promise((res) => {
+        debouce_object.run(() => {
+          enter_el.querySelector("index-list")?.appendChild(drag_el);
+          res(true);
+        });
+      });
+    },
   },
-  "X-CHAIN": (drag_el, drag_context) => { },
+  "X-OUT": {
+    "X-MODULE": (
+      drag_el,
+      drag_context,
+      enter_el,
+      enter_context,
+      debouce_object
+    ) => {
+      return new Promise((res) => {
+        enter_el.querySelector("index-list")?.appendChild(drag_el);
+        res(true);
+      });
+    },
+    "X-CHAIN": (
+      drag_el,
+      drag_context,
+      enter_el,
+      enter_context,
+      debouce_object
+    ) => {
+      return new Promise((res) => {
+        res(false);
+      });
+    },
+  },
 });
+
 appEl.appendChild(xRoot);
 
 const chains_list = document.createElement("index-list");
 chains_list.classList.add("chains");
-// attach_drag_section(chains_list);
 
 xRoot.appendChild(chains_list);
 document.body.appendChild(appEl);
