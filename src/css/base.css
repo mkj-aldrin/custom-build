@@ -35,6 +35,5 @@ body,
 }
 
 #app {
-  padding: 2px;
   grid-area: 1/1/1/1;
 }

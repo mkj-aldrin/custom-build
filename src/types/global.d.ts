@@ -8,6 +8,8 @@ import { Xroot } from "../app/custom-elements/root";
 export declare namespace X {
   export interface DragEvent
     extends CustomEvent<{
+      clientX: number,
+      clientY: number,
       context: {};
     }> {
     target: Xchain | Xmodule | Xout;
@@ -33,4 +35,4 @@ declare global {
   }
 }
 
-export {};
+export { };

@@ -37,22 +37,22 @@ export const ani = (obj: { el: Xmodule | Xout; box: DOMRect }) => {
 };
 
 export function move(
-  [clientX, clientY],
-  module: Xmodule | Xout,
+  pos: { x: number, y: number },
+  target: HTMLElement,
   reset = false
 ) {
   const opt: KeyframeAnimationOptions = {
     easing: easingMap.quintOut,
-    duration: 3000,
+    duration: 1000,
     fill: "both",
   };
 
   const v = {
-    x: Math.max(Math.min((clientX - module.dragPossition.x) * 0.0625, 5), -5),
-    y: Math.max(Math.min((clientY - module.dragPossition.y) * 0.0625, 5), -5),
+    x: Math.max(Math.min((pos.x - target.__drag_dragPossition.x) * 0.0625, 5), -5),
+    y: Math.max(Math.min((pos.y - target.__drag_dragPossition.y) * 0.0625, 5), -5),
   };
 
-  module.animate(
+  target.animate(
     [
       {
         transform: reset

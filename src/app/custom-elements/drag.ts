@@ -1,5 +1,5 @@
 import { debouce } from "../../tools/timing";
-import { ani } from "../animations/flip";
+import { ani, move } from "../animations/flip";
 
 export function attach_drag<T extends HTMLElement>(target: T) {
   target.dragPosition = {
@@ -51,8 +51,6 @@ export function attach_drag<T extends HTMLElement>(target: T) {
   });
 }
 
-const enterDebounce = debouce(100);
-
 type Context = {
   [tag in string]: HTMLElement
 };
@@ -87,9 +85,19 @@ export async function attach_drag_root(
     target.classList.add("dragging")
 
     // attach move listner here
-    // const {} = e
+    const { detail: { clientX, clientY } } = e
+    const dragBox = drag_el.getBoundingClientRect()
+    drag_el.__drag_dragPossition = { x: dragBox.left + dragBox.width / 2, y: dragBox.top + dragBox.height / 2 }
+
+    move({ x: clientX, y: clientY }, drag_el)
+
     target.onpointermove = e => {
-      console.log(e.clientX, e.clientY);
+      const pos = {
+        x: e.clientX,
+        y: e.clientY
+      }
+
+      move(pos, drag_el)
     }
 
   });
@@ -102,6 +110,7 @@ export async function attach_drag_root(
       target: enter_el,
       detail: { context: enter_context },
     } = e;
+
 
     const enterIndex = enter_el.index;
     const dragIndex = drag_el.index;
@@ -144,7 +153,11 @@ export async function attach_drag_root(
       }
     });
 
+
     const res = await p;
+
+    const dragBox = drag_el.getBoundingClientRect()
+    drag_el.__drag_dragPossition = { x: dragBox.left + dragBox.width / 2, y: dragBox.top + dragBox.height / 2 }
 
     const ani_list = [dragBoxElements, enterBoxElements];
 
@@ -157,10 +170,11 @@ export async function attach_drag_root(
   });
 
   target.addEventListener("pointerup", (e) => {
+    target.classList.remove("dragging")
     drag_el?.classList.remove("drag");
+    move({ x: 0, y: 0 }, drag_el, true)
     drag_el = null;
     drag_context = {};
-    target.classList.remove("dragging")
 
     // detach move handler here
     target.onpointermove = null
