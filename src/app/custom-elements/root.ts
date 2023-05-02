@@ -1,6 +1,4 @@
-import { DragRoot } from "./drag";
-
-export class Xroot extends DragRoot {
+export class Xroot extends HTMLElement {
   constructor() {
     super();
   }

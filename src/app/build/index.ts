@@ -14,7 +14,7 @@ export function build_module({ type }) {
   return el;
 }
 
-export function build_parameter({}) {
+export function build_parameter({ }) {
   const el = document.createElement("x-module");
   return el;
 }

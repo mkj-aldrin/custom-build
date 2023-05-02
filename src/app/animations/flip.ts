@@ -24,29 +24,15 @@ export const ani = (obj: { el: Xmodule | Xout; box: DOMRect }) => {
     composite: "accumulate",
   };
 
-  // console.log(posDiff)
   if (posDiff.x || posDiff.y || posDiff.sy) {
-    // obj.el.style.pointerEvents = 'none'
-    // obj.el.style.transformOrigin = "top left 0"
   }
 
   obj.el.animate(
     [
-      {
-        transform: `translate(${posDiff.x}px,${posDiff.y}px)`,
-        // transform: `scale(${posDiff.sx},${posDiff.sy})`,
-        // transform: `translate(${posDiff.x}px,${posDiff.y}px) scale(${posDiff.sx},${posDiff.sy})`,
-        // transform: `scale(${posDiff.sx},${posDiff.sy}) translate(${posDiff.x}px,${posDiff.y}px)`,
-        // transformOrigin: 'top left',
-      },
-      {
-        // transformOrigin: 'top left',
-      },
+      { transform: `translate(${posDiff.x}px,${posDiff.y}px)`, }, {},
     ],
     opt
   ).onfinish = (e) => {
-    // obj.el.style.removeProperty('pointer-events')
-    // obj.el.style.removeProperty('transform-origin')
   };
 };
 
@@ -66,14 +52,14 @@ export function move(
     y: Math.max(Math.min((clientY - module.dragPossition.y) * 0.0625, 5), -5),
   };
 
-  // module.animate(
-  //   [
-  //     {
-  //       transform: reset
-  //         ? "translate(0px,0px)"
-  //         : `translate(${v.x}px,${v.y}px)`,
-  //     },
-  //   ],
-  //   opt
-  // );
+  module.animate(
+    [
+      {
+        transform: reset
+          ? "translate(0px,0px)"
+          : `translate(${v.x}px,${v.y}px)`,
+      },
+    ],
+    opt
+  );
 }
