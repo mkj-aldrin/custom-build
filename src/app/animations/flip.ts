@@ -1,12 +1,9 @@
-import { Xmodule } from "../custom-elements/module";
-import { Xout } from "../custom-elements/out";
-
 export const easingMap = {
   quintOut: "cubic-bezier(0.230, 1.000, 0.320, 1.000)",
   quintIn: "cubic-bezier(0.755, 0.050, 0.855, 0.060)",
 };
 
-export const ani = (obj: { el: Xmodule | Xout; box: DOMRect }) => {
+export const ani = (obj: { el: HTMLElement; box: DOMRect }) => {
   const oldBox = obj.box;
   const newBox = obj.el.getBoundingClientRect();
 
@@ -27,12 +24,14 @@ export const ani = (obj: { el: Xmodule | Xout; box: DOMRect }) => {
   if (posDiff.x || posDiff.y || posDiff.sy) {
   }
 
+  !obj.el.__drag && (obj.el.__drag = {})
+  obj.el.__drag.ani = true
+
   obj.el.animate(
-    [
-      { transform: `translate(${posDiff.x}px,${posDiff.y}px)`, }, {},
-    ],
+    [{ transform: `translate(${posDiff.x}px,${posDiff.y}px)`, }, {}],
     opt
   ).onfinish = (e) => {
+    // delete obj.el.ani
   };
 };
 
@@ -53,13 +52,7 @@ export function move(
   };
 
   target.animate(
-    [
-      {
-        transform: reset
-          ? "translate(0px,0px)"
-          : `translate(${v.x}px,${v.y}px)`,
-      },
-    ],
+    [{ transform: reset ? "translate(0px,0px)" : `translate(${v.x}px,${v.y}px)` }],
     opt
   );
 }

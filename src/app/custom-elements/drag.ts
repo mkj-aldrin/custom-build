@@ -1,5 +1,5 @@
 import { debouce } from "../../tools/timing";
-import { ani, move } from "../animations/flip";
+import { ani, easingMap, move } from "../animations/flip";
 
 export function attach_drag<T extends HTMLElement>(target: T) {
   target.__drag_dragPosition = {
@@ -86,6 +86,7 @@ export async function attach_drag_root(
 
   target.addEventListener("drag:down", (e) => {
     drag_el = e.target;
+    drag_el.__drag = {}
     drag_context = e.detail.context;
     e.target.classList.add("drag");
     target.classList.add("dragging")
@@ -100,6 +101,8 @@ export async function attach_drag_root(
     move_({ x: clientX, y: clientY }, drag_el)
 
     target.onpointermove = e => {
+
+      if (drag_el.__drag?.ani) return
       const pos = {
         x: e.clientX,
         y: e.clientY
@@ -127,7 +130,9 @@ export async function attach_drag_root(
     const dragParent = drag_el.parentElement;
     const enterParent = enter_el.parentElement;
 
-    const insertPosition: InsertPosition = dragParent == enterParent && enterIndex > dragIndex ? "afterend" : "beforebegin"
+    const sameParent = dragParent == enterParent
+
+    const insertPosition: InsertPosition = sameParent && enterIndex > dragIndex ? "afterend" : "beforebegin"
 
     const dragBoxElements: { el: HTMLElement; box: DOMRect }[] = [];
     dragParent.querySelectorAll(drag_el.tagName).forEach((m: HTMLElement) => {
@@ -136,22 +141,11 @@ export async function attach_drag_root(
     });
 
     const enterBoxElements: { el: HTMLElement; box: DOMRect }[] = [];
-    enterParent != dragParent &&
+    !sameParent &&
       enter_el.parentElement.querySelectorAll(enter_el.tagName).forEach((m: HTMLElement) => {
         const box = m.getBoundingClientRect();
         enterBoxElements.push({ el: m, box });
       });
-
-    // callbackMap[enter_el.tagName][drag_el.tagName]({
-    //   drag_el,
-    //   drag_context,
-    //   enter_el,
-    //   enter_context,
-    //   debounce_object
-    // });
-
-    // console.log(enter_el.tagName, drag_el.tagName);
-
 
     let p = new Promise((res, reject) => {
       if (enter_el.tagName == drag_el.tagName) {
@@ -173,6 +167,7 @@ export async function attach_drag_root(
       }
     });
 
+    !sameParent && (drag_el.__drag.newHome = true)
 
     const res = await p;
 
@@ -181,7 +176,26 @@ export async function attach_drag_root(
 
     const ani_list = [dragBoxElements, enterBoxElements];
 
-    res && ani_list?.forEach((list) => list.forEach(ani));
+    if (res) {
+      ani_list?.forEach((list) => list.filter(elBox => !elBox.el.__drag?.newHome).forEach(ani));
+      if (drag_el.__drag?.newHome) {
+
+        drag_el.__drag.ani = true
+
+        const opt: KeyframeAnimationOptions = {
+          easing: easingMap.quintOut,
+          duration: 150,
+          fill: "both",
+        };
+
+        drag_el.animate(
+          [{ transform: "translate(0px,0px) scale(0.75)", opacity: 0.5 }, { transform: `translate(0px,0px) scale(1)`, opacity: 1 }],
+          opt
+        ).onfinish = (e) => {
+          delete drag_el.__drag?.ani
+        };
+      }
+    }
 
     drag_context = {
       ...drag_context,

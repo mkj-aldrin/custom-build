@@ -21,6 +21,7 @@ attach_drag_root(xRoot, {
     }
   },
   "X-MODULE": {
+    "X-OUT": "block",
     "X-CHAIN": (o) => {
       return new Promise((res) => {
         o.debounce_object.run(() => {
