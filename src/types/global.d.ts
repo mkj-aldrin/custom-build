@@ -12,7 +12,7 @@ export declare namespace X {
       clientY: number,
       context: {};
     }> {
-    target: HTMLElement;
+    target: HTMLElement & { index?: number };
   }
 }
 declare global {

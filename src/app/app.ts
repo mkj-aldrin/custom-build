@@ -6,7 +6,6 @@ const appEl = document.createElement("div");
 document.body.appendChild(appEl);
 appEl.id = "app";
 
-
 const xRoot = document.createElement("x-root");
 appEl.appendChild(xRoot);
 
@@ -15,6 +14,12 @@ xRoot.appendChild(chains_list);
 chains_list.classList.add("chains");
 
 attach_drag_root(xRoot, {
+  "X-CHAIN": {
+    mover: () => { },
+    "X-CHAIN": async (o) => {
+      return false
+    }
+  },
   "X-MODULE": {
     "X-CHAIN": (o) => {
       return new Promise((res) => {
@@ -26,38 +31,29 @@ attach_drag_root(xRoot, {
     },
   },
   "X-OUT": {
+    "X-OUT": "block",
     "X-MODULE": (o) => {
       return new Promise((res) => {
         o.enter_el.querySelector("index-list")?.appendChild(o.drag_el);
         res(true);
       });
     },
-    "X-CHAIN": (o) => {
-      return new Promise((res) => {
-        res(false);
-      });
-    },
   },
 });
 
-
-const init_arr = [
-  {
-    modules: [
-      { type: "PTH", outs: [1] },
-      { type: "LFO", outs: [] },
-      { type: "PRO", outs: [] },
-    ],
-  },
-  {
-    modules: [
-      { type: "PRO", outs: [1, 2] },
-      { type: "LFO", outs: [1] },
-    ],
-  },
-];
-
-init_arr.forEach((chain) => {
+[{
+  modules: [
+    { type: "PTH", outs: [1] },
+    { type: "LFO", outs: [] },
+    { type: "PRO", outs: [] },
+  ],
+},
+{
+  modules: [
+    { type: "PRO", outs: [1, 2] },
+    { type: "LFO", outs: [1] },
+  ],
+}].forEach((chain) => {
   const chainEl = build_chain();
   chain.modules.forEach((module) => {
     const moduleEl = build_module(module);

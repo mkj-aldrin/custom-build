@@ -11,17 +11,13 @@ export function attach_drag<T extends HTMLElement>(target: T) {
     if (e.__detail?.attached) return;
 
     e.__detail = {
-      attached: true,
+      attached: true
     };
 
     target.dispatchEvent(
       new CustomEvent("drag:down", {
         bubbles: true,
-        detail: {
-          clientX: e.clientX,
-          clientY: e.clientY,
-          context: {},
-        },
+        detail: { clientX: e.clientX, clientY: e.clientY, context: {} }
       })
     );
   });
@@ -30,11 +26,7 @@ export function attach_drag<T extends HTMLElement>(target: T) {
     target.dispatchEvent(
       new CustomEvent("drag:enter", {
         bubbles: true,
-        detail: {
-          clientX: e.clientX,
-          clientY: e.clientY,
-          context: {},
-        },
+        detail: { clientX: e.clientX, clientY: e.clientY, context: {} }
       })
     );
   });
@@ -54,10 +46,23 @@ type Context = {
   [tag in string]: HTMLElement
 };
 
+// type Mover = () => void
+// type InnerMap = Record<string, ({ }: {
+//   drag_el: HTMLElement,
+//   drag_context: Context,
+//   enter_el: HTMLElement,
+//   enter_context: Context,
+//   debounce_object: ReturnType<typeof debouce>
+// }
+// ) => Promise<boolean>>
+
+// interface H extends InnerMap {
+//   mover: Mover
+// }
 
 type CallBackMap = {
-  [x in string]: {
-    [y in string]: (
+  [x: string]: {
+    [y: string]: ((
       { }: {
         drag_el: HTMLElement,
         drag_context: Context,
@@ -65,7 +70,7 @@ type CallBackMap = {
         enter_context: Context,
         debounce_object: ReturnType<typeof debouce>
       }
-    ) => Promise<boolean>;
+    ) => Promise<boolean>) | "block";
   };
 };
 
@@ -85,12 +90,14 @@ export async function attach_drag_root(
     e.target.classList.add("drag");
     target.classList.add("dragging")
 
+    const move_ = callbackMap[drag_el.tagName]?.mover ?? move
+
     // attach move listner here
     const { detail: { clientX, clientY } } = e
     const dragBox = drag_el.getBoundingClientRect()
     drag_el.__drag_dragPossition = { x: dragBox.left + dragBox.width / 2, y: dragBox.top + dragBox.height / 2 }
 
-    move({ x: clientX, y: clientY }, drag_el)
+    move_({ x: clientX, y: clientY }, drag_el)
 
     target.onpointermove = e => {
       const pos = {
@@ -98,7 +105,7 @@ export async function attach_drag_root(
         y: e.clientY
       }
 
-      move(pos, drag_el)
+      move_(pos, drag_el)
     }
 
   });
@@ -112,6 +119,7 @@ export async function attach_drag_root(
       detail: { context: enter_context },
     } = e;
 
+    if (callbackMap[drag_el.tagName]?.[enter_el.tagName] == 'block') return
 
     const enterIndex = enter_el.index;
     const dragIndex = drag_el.index;
@@ -133,6 +141,17 @@ export async function attach_drag_root(
         const box = m.getBoundingClientRect();
         enterBoxElements.push({ el: m, box });
       });
+
+    // callbackMap[enter_el.tagName][drag_el.tagName]({
+    //   drag_el,
+    //   drag_context,
+    //   enter_el,
+    //   enter_context,
+    //   debounce_object
+    // });
+
+    // console.log(enter_el.tagName, drag_el.tagName);
+
 
     let p = new Promise((res, reject) => {
       if (enter_el.tagName == drag_el.tagName) {
@@ -177,7 +196,6 @@ export async function attach_drag_root(
     drag_el = null;
     drag_context = {};
 
-    // detach move handler here
     target.onpointermove = null
   });
 }
