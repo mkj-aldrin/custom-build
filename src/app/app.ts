@@ -15,46 +15,50 @@ chains_list.classList.add("chains");
 
 attach_drag_root(xRoot, {
   "X-CHAIN": {
-    mover: () => { },
-    "X-CHAIN": async (o) => {
-      return false
-    }
+    mover: () => {},
+    enter: {
+      "X-CHAIN": async () => false,
+    },
   },
   "X-MODULE": {
-    "X-OUT": "block",
-    "X-CHAIN": (o) => {
-      return new Promise((res) => {
-        o.debounce_object.run(() => {
-          o.enter_el.querySelector("index-list")?.appendChild(o.drag_el);
-          res(true);
+    enter: {
+      "X-OUT": "block",
+      "X-CHAIN": (o) => {
+        return new Promise((res) => {
+          o.debounce_object.run(() => {
+            o.enter_el.querySelector("index-list")?.appendChild(o.drag_el);
+            res(true);
+          });
         });
-      });
+      },
     },
   },
   "X-OUT": {
-    "X-OUT": "block",
-    "X-MODULE": (o) => {
-      return new Promise((res) => {
+    enter: {
+      "X-OUT": "block",
+      "X-MODULE": async (o) => {
         o.enter_el.querySelector("index-list")?.appendChild(o.drag_el);
-        res(true);
-      });
+        return true;
+      },
     },
   },
 });
 
-[{
-  modules: [
-    { type: "PTH", outs: [1] },
-    { type: "LFO", outs: [] },
-    { type: "PRO", outs: [] },
-  ],
-},
-{
-  modules: [
-    { type: "PRO", outs: [1, 2] },
-    { type: "LFO", outs: [1] },
-  ],
-}].forEach((chain) => {
+[
+  {
+    modules: [
+      { type: "PTH", outs: [1] },
+      { type: "LFO", outs: [] },
+      { type: "PRO", outs: [] },
+    ],
+  },
+  {
+    modules: [
+      { type: "PRO", outs: [1, 2] },
+      { type: "LFO", outs: [1] },
+    ],
+  },
+].forEach((chain) => {
   const chainEl = build_chain();
   chain.modules.forEach((module) => {
     const moduleEl = build_module(module);

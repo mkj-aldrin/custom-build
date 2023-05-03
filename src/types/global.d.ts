@@ -6,13 +6,14 @@ import { Xparamter } from "../app/custom-elements/parameter";
 import { Xroot } from "../app/custom-elements/root";
 
 export declare namespace X {
+  type DragElement = HTMLElement & { index?: number; __drag?: {} };
   export interface DragEvent
     extends CustomEvent<{
-      clientX: number,
-      clientY: number,
+      clientX: number;
+      clientY: number;
       context: {};
     }> {
-    target: HTMLElement & { index?: number };
+    target: DragElement;
   }
 }
 declare global {
@@ -35,4 +36,4 @@ declare global {
   }
 }
 
-export { };
+export {};
