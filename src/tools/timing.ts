@@ -5,8 +5,6 @@ export function debouce(window: number) {
       t = setTimeout(fn, window);
     },
     clear: () => {
-      console.log("timeout id: ", t);
-
       clearTimeout(t);
     },
   };

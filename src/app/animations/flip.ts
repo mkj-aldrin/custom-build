@@ -48,8 +48,8 @@ export function move(
   };
 
   const v = {
-    x: Math.max(Math.min((pos.x - target.__drag_dragPossition.x) * 0.0625, 5), -5),
-    y: Math.max(Math.min((pos.y - target.__drag_dragPossition.y) * 0.0625, 5), -5),
+    x: Math.max(Math.min((pos.x - target.__drag_dragPossition?.x) * 0.0625, 5), -5),
+    y: Math.max(Math.min((pos.y - target.__drag_dragPossition?.y) * 0.0625, 5), -5),
   };
 
   target.animate(

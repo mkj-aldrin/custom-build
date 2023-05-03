@@ -2,6 +2,45 @@ import { build_chain, build_module, build_out } from "./build";
 import "./custom-elements";
 import { attach_drag_root } from "./custom-elements/drag";
 
+const appEl = document.createElement("div");
+document.body.appendChild(appEl);
+appEl.id = "app";
+
+
+const xRoot = document.createElement("x-root");
+appEl.appendChild(xRoot);
+
+const chains_list = document.createElement("index-list");
+xRoot.appendChild(chains_list);
+chains_list.classList.add("chains");
+
+attach_drag_root(xRoot, {
+  "X-MODULE": {
+    "X-CHAIN": (o) => {
+      return new Promise((res) => {
+        o.debounce_object.run(() => {
+          o.enter_el.querySelector("index-list")?.appendChild(o.drag_el);
+          res(true);
+        });
+      });
+    },
+  },
+  "X-OUT": {
+    "X-MODULE": (o) => {
+      return new Promise((res) => {
+        o.enter_el.querySelector("index-list")?.appendChild(o.drag_el);
+        res(true);
+      });
+    },
+    "X-CHAIN": (o) => {
+      return new Promise((res) => {
+        res(false);
+      });
+    },
+  },
+});
+
+
 const init_arr = [
   {
     modules: [
@@ -17,63 +56,6 @@ const init_arr = [
     ],
   },
 ];
-
-const appEl = document.createElement("div");
-appEl.id = "app";
-
-const xRoot = document.createElement("x-root");
-attach_drag_root(xRoot, {
-  "X-MODULE": {
-    "X-OUT": (drag_el, drag_context, enter_el, enter_context) => {},
-    "X-CHAIN": (
-      drag_el,
-      drag_context,
-      enter_el,
-      enter_context,
-      debouce_object
-    ) => {
-      return new Promise((res) => {
-        debouce_object.run(() => {
-          enter_el.querySelector("index-list")?.appendChild(drag_el);
-          res(true);
-        });
-      });
-    },
-  },
-  "X-OUT": {
-    "X-MODULE": (
-      drag_el,
-      drag_context,
-      enter_el,
-      enter_context,
-      debouce_object
-    ) => {
-      return new Promise((res) => {
-        enter_el.querySelector("index-list")?.appendChild(drag_el);
-        res(true);
-      });
-    },
-    "X-CHAIN": (
-      drag_el,
-      drag_context,
-      enter_el,
-      enter_context,
-      debouce_object
-    ) => {
-      return new Promise((res) => {
-        res(false);
-      });
-    },
-  },
-});
-
-appEl.appendChild(xRoot);
-
-const chains_list = document.createElement("index-list");
-chains_list.classList.add("chains");
-
-xRoot.appendChild(chains_list);
-document.body.appendChild(appEl);
 
 init_arr.forEach((chain) => {
   const chainEl = build_chain();

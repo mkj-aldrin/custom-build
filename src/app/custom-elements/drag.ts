@@ -2,7 +2,7 @@ import { debouce } from "../../tools/timing";
 import { ani, move } from "../animations/flip";
 
 export function attach_drag<T extends HTMLElement>(target: T) {
-  target.dragPosition = {
+  target.__drag_dragPosition = {
     x: 0,
     y: 0,
   };
@@ -41,7 +41,6 @@ export function attach_drag<T extends HTMLElement>(target: T) {
 
   target.addEventListener("drag:down", (e) => {
     if (e.target == target) return;
-
     e.detail.context[target.tagName] = target;
   });
 
@@ -59,16 +58,18 @@ type Context = {
 type CallBackMap = {
   [x in string]: {
     [y in string]: (
-      drag_el: HTMLElement,
-      drag_context: Context,
-      enter_el: HTMLElement,
-      enter_context: Context,
-      debouce_object: ReturnType<typeof debouce>
+      { }: {
+        drag_el: HTMLElement,
+        drag_context: Context,
+        enter_el: HTMLElement,
+        enter_context: Context,
+        debounce_object: ReturnType<typeof debouce>
+      }
     ) => Promise<boolean>;
   };
 };
 
-const parent_debouce = debouce(100);
+const debounce_object = debouce(100);
 
 export async function attach_drag_root(
   target: HTMLElement,
@@ -135,18 +136,18 @@ export async function attach_drag_root(
 
     let p = new Promise((res, reject) => {
       if (enter_el.tagName == drag_el.tagName) {
-        parent_debouce.clear();
+        debounce_object.clear();
         enter_el.insertAdjacentElement(insertPosition, drag_el);
         res(true);
       } else {
         !callbackMap[drag_el.tagName]
-          ?.[enter_el.tagName]?.(
+          ?.[enter_el.tagName]?.({
             drag_el,
             drag_context,
             enter_el,
             enter_context,
-            parent_debouce
-          )
+            debounce_object
+          })
           ?.then((state) => {
             res(state);
           }) && res(false);
@@ -172,7 +173,7 @@ export async function attach_drag_root(
   target.addEventListener("pointerup", (e) => {
     target.classList.remove("dragging")
     drag_el?.classList.remove("drag");
-    move({ x: 0, y: 0 }, drag_el, true)
+    drag_el && move({ x: 0, y: 0 }, drag_el, true)
     drag_el = null;
     drag_context = {};
 

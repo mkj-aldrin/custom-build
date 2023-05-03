@@ -12,7 +12,7 @@ export declare namespace X {
       clientY: number,
       context: {};
     }> {
-    target: Xchain | Xmodule | Xout;
+    target: HTMLElement;
   }
 }
 declare global {
