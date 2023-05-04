@@ -52,14 +52,14 @@ type CallBackMap = {
     mover?: () => void;
     enter: {
       [y: string]:
-      | (({ }: {
-        drag_el: HTMLElement;
-        drag_context: Context;
-        enter_el: HTMLElement;
-        enter_context: Context;
-        debounce_object: ReturnType<typeof debouce>;
-      }) => Promise<boolean>)
-      | "block";
+        | (({}: {
+            drag_el: HTMLElement;
+            drag_context: Context;
+            enter_el: HTMLElement;
+            enter_context: Context;
+            debounce_object: ReturnType<typeof debouce>;
+          }) => Promise<boolean>)
+        | "block";
     };
   };
 };
@@ -104,6 +104,16 @@ export async function attach_drag_root(
 
       move_(pos, drag_el);
     };
+
+    target.dispatchEvent(
+      new CustomEvent("dragroot:down", {
+        bubbles: true,
+        detail: {
+          target: e.target,
+          context: drag_context,
+        },
+      })
+    );
   });
 
   target.addEventListener("drag:enter", async (e) => {
@@ -204,19 +214,27 @@ export async function attach_drag_root(
       ...e.detail.context,
     };
 
-    target.dispatchEvent(new CustomEvent("dragroot:enter", {
-      bubbles: true, detail: { context: drag_context }
-    }))
+    target.dispatchEvent(
+      new CustomEvent("dragroot:enter", {
+        bubbles: true,
+        detail: {
+          target: e.target,
+          context: e.detail.context,
+        },
+      })
+    );
   });
 
   target.addEventListener("pointerup", (e) => {
-    if (!drag_el) return
-    debounce_object.clear()
+    if (!drag_el) return;
+    debounce_object.clear();
 
-    target.dispatchEvent(new CustomEvent("drag:end", {
-      bubbles: true,
-      detail: {}
-    }))
+    target.dispatchEvent(
+      new CustomEvent("dragroot:end", {
+        bubbles: true,
+        detail: {},
+      })
+    );
 
     target.classList.remove("dragging");
     drag_el?.classList.remove("drag");

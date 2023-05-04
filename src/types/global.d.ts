@@ -7,13 +7,26 @@ import { Xroot } from "../app/custom-elements/root";
 
 export declare namespace X {
   type DragElement = HTMLElement & { index?: number; __drag?: {} };
+
   export interface DragEvent
     extends CustomEvent<{
       clientX: number;
       clientY: number;
-      context: {};
+      context: {
+        [tag: string]: HTMLElement;
+      };
     }> {
     target: DragElement;
+  }
+
+  export interface RootEvent
+    extends CustomEvent<{
+      target: HTMLElement;
+      context?: {
+        [tag: string]: HTMLElement;
+      };
+    }> {
+    target: HTMLElement;
   }
 }
 declare global {
@@ -25,8 +38,10 @@ declare global {
     };
     "drag:down": X.DragEvent;
     "drag:enter": X.DragEvent;
-    "drag:end": X.DragEvent
-    "dragroot:enter": CustomEvent<{ context: {} }> & { target: HTMLElement }
+    "drag:end": X.DragEvent;
+    "dragroot:down": X.RootEvent;
+    "dragroot:enter": X.RootEvent;
+    "dragroot:end": X.RootEvent;
   }
   interface HTMLElementTagNameMap {
     "x-root": Xroot;
@@ -38,4 +53,4 @@ declare global {
   }
 }
 
-export { };
+export {};
