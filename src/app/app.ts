@@ -45,13 +45,22 @@ attach_drag_root(xRoot, {
 });
 
 xRoot.addEventListener("dragroot:down", (e) => {
-  console.log("root down: ", e.detail.target);
-  console.log("context: ", e.detail.context);
-  console.log();
+  console.log(
+    "root down: ",
+    e.detail.target,
+    "\n",
+    "context: ",
+    e.detail.context
+  );
 });
 xRoot.addEventListener("dragroot:enter", (e) => {
-  console.log("root enter: ", e.detail.target);
-  console.log("context: ", e.detail.context);
+  console.log(
+    "root enter: ",
+    e.detail.target,
+    "\n",
+    "context: ",
+    e.detail.context
+  );
   console.log();
 });
 xRoot.addEventListener("dragroot:end", (e) => {
