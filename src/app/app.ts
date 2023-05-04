@@ -1,6 +1,7 @@
 import { build_chain, build_module, build_out } from "./build";
 import "./custom-elements";
 import { attach_drag_root } from "./custom-elements/drag";
+import { Xroot } from "./custom-elements/root";
 
 const appEl = document.createElement("div");
 document.body.appendChild(appEl);
@@ -15,7 +16,7 @@ chains_list.classList.add("chains");
 
 attach_drag_root(xRoot, {
   "X-CHAIN": {
-    mover: () => {},
+    mover: () => { },
     enter: {
       "X-CHAIN": async () => false,
     },
@@ -42,6 +43,70 @@ attach_drag_root(xRoot, {
       },
     },
   },
+});
+
+const moduleUpdateState = {
+  start: {
+    target: {
+      index: 0,
+      type: ""
+    },
+    context: {}
+  },
+  end: {
+    target: {
+      index: 0,
+      type: ""
+    },
+    context: {}
+  }
+}
+
+xRoot.addEventListener("drag:down", e => {
+  if (!(e.target.tagName == 'X-MODULE' || e.target.tagName == 'X-OUT')) return
+
+  moduleUpdateState.start.target = {
+    type: e.target.tagName,
+    index: e.target.index
+  }
+
+  for (const key in e.detail.context) {
+    const el = e.detail.context[key]
+    moduleUpdateState.start.context[el.tagName] = el.index
+  }
+});
+
+xRoot.addEventListener("dragroot:enter", e => {
+  console.log(e.target.tagName);
+
+  if (!(e.target.tagName == 'X-MODULE' || e.target.tagName == 'X-OUT')) return
+
+  console.log(e.detail.context);
+
+  // moduleUpdateState.end.target = {
+  //   type: e.target.tagName,
+  //   index: e.target.index
+  // }
+
+  // for (const key in e.detail.context) {
+  //   const el = e.detail.context[key]
+  //   moduleUpdateState.end.context[el.tagName] = el.index
+  // }
+})
+
+xRoot.addEventListener("drag:end", e => {
+  // console.log(moduleUpdateState.end.context);
+  // console.log(moduleUpdateState.end.target);
+  switch (moduleUpdateState.end.target.type) {
+    case "X-MODULE": {
+      // console.log(`m -r c ${moduleUpdateState.start.context['X-CHAIN']}:${moduleUpdateState.start.target.index}`);
+      // console.log(`m -i c ${moduleUpdateState.end.context['X-CHAIN']}:${moduleUpdateState.end.target.index}`);
+      break
+    }
+    case "X-CHAIN": {
+      break
+    }
+  }
 });
 
 [

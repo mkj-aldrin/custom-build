@@ -52,14 +52,14 @@ type CallBackMap = {
     mover?: () => void;
     enter: {
       [y: string]:
-        | (({}: {
-            drag_el: HTMLElement;
-            drag_context: Context;
-            enter_el: HTMLElement;
-            enter_context: Context;
-            debounce_object: ReturnType<typeof debouce>;
-          }) => Promise<boolean>)
-        | "block";
+      | (({ }: {
+        drag_el: HTMLElement;
+        drag_context: Context;
+        enter_el: HTMLElement;
+        enter_context: Context;
+        debounce_object: ReturnType<typeof debouce>;
+      }) => Promise<boolean>)
+      | "block";
     };
   };
 };
@@ -72,10 +72,6 @@ export async function attach_drag_root(
 ) {
   let drag_el: X.DragElement | null = null;
   let drag_context: Context = {};
-  const dragState = {
-    start: {},
-    end: {},
-  };
 
   target.addEventListener("drag:down", (e) => {
     drag_el = e.target;
@@ -83,11 +79,6 @@ export async function attach_drag_root(
     drag_context = e.detail.context;
     e.target.classList.add("drag");
     target.classList.add("dragging");
-
-    for (const key in e.detail.context) {
-      dragState.start[key] = e.detail.context[key].index;
-    }
-    dragState.start[drag_el.tagName] = drag_el.index;
 
     const move_ = callbackMap[drag_el.tagName]?.mover ?? move;
 
@@ -126,18 +117,6 @@ export async function attach_drag_root(
 
     if (callbackMap[drag_el.tagName]?.enter?.[enter_el.tagName] == "block")
       return;
-
-    for (const key in e.detail.context) {
-      dragState.end[key] = e.detail.context[key].index;
-    }
-
-    dragState.end[drag_el.tagName] = enter_el.index;
-
-    if (drag_el.tagName != enter_el.tagName) {
-      dragState.end[enter_el.tagName] = enter_el.index;
-      dragState.end[drag_el.tagName] =
-        enter_el.querySelector("index-list").children.length;
-    }
 
     const enterIndex = enter_el.index;
     const dragIndex = drag_el.index;
@@ -215,7 +194,7 @@ export async function attach_drag_root(
           ],
           opt
         ).onfinish = (e) => {
-          delete drag_el.__drag?.ani;
+          drag_el && delete drag_el.__drag?.ani;
         };
       }
     }
@@ -224,15 +203,26 @@ export async function attach_drag_root(
       ...drag_context,
       ...e.detail.context,
     };
+
+    target.dispatchEvent(new CustomEvent("dragroot:enter", {
+      bubbles: true, detail: { context: drag_context }
+    }))
   });
 
   target.addEventListener("pointerup", (e) => {
+    if (!drag_el) return
+    debounce_object.clear()
+
+    target.dispatchEvent(new CustomEvent("drag:end", {
+      bubbles: true,
+      detail: {}
+    }))
+
     target.classList.remove("dragging");
     drag_el?.classList.remove("drag");
     drag_el && move({ x: 0, y: 0 }, drag_el, true);
     drag_el = null;
     drag_context = {};
-    console.log(dragState);
 
     target.onpointermove = null;
   });

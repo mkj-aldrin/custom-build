@@ -25,6 +25,8 @@ declare global {
     };
     "drag:down": X.DragEvent;
     "drag:enter": X.DragEvent;
+    "drag:end": X.DragEvent
+    "dragroot:enter": CustomEvent<{ context: {} }> & { target: HTMLElement }
   }
   interface HTMLElementTagNameMap {
     "x-root": Xroot;
@@ -36,4 +38,4 @@ declare global {
   }
 }
 
-export {};
+export { };
