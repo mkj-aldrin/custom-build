@@ -15,7 +15,7 @@ chains_list.classList.add("chains");
 
 attach_drag_root(xRoot, {
   "X-CHAIN": {
-    mover: () => {},
+    mover: () => { },
     enter: {
       "X-CHAIN": async () => false,
     },
@@ -44,27 +44,67 @@ attach_drag_root(xRoot, {
   },
 });
 
+let updateState = {
+  start: {
+    target: {
+      type: null,
+      index: 0
+    },
+    context: {}
+  },
+  end: {
+    target: {
+      type: null,
+      index: 0
+    },
+    context: {}
+  }
+}
+
 xRoot.addEventListener("dragroot:down", (e) => {
-  console.log(
-    "root down: ",
-    e.detail.target,
-    "\n",
-    "context: ",
-    e.detail.context
-  );
+  const { target, context } = e.detail
+
+  updateState.start.target = {
+    type: target.tagName,
+    index: target.index
+  }
+
+  for (const key in context) {
+    updateState.start.context[key] = context[key].index
+  }
 });
+
 xRoot.addEventListener("dragroot:enter", (e) => {
-  console.log(
-    "root enter: ",
-    e.detail.target,
-    "\n",
-    "context: ",
-    e.detail.context
-  );
-  console.log();
+  const { target, context } = e.detail
+
+  updateState.end.target = {
+    type: target.tagName,
+    index: target.index
+  }
+
+  for (const key in context) {
+    updateState.end.context[key] = context[key].index
+  }
 });
+
 xRoot.addEventListener("dragroot:end", (e) => {
-  console.log("end");
+  console.log(updateState);
+  updateState = {
+    start: {
+      target: {
+        type: null,
+        index: 0
+      },
+      context: {}
+    },
+    end: {
+      target: {
+        type: null,
+        index: 0
+      },
+      context: {}
+    }
+  }
 });
 
 [

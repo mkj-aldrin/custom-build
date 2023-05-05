@@ -52,14 +52,14 @@ type CallBackMap = {
     mover?: () => void;
     enter: {
       [y: string]:
-        | (({}: {
-            drag_el: HTMLElement;
-            drag_context: Context;
-            enter_el: HTMLElement;
-            enter_context: Context;
-            debounce_object: ReturnType<typeof debouce>;
-          }) => Promise<boolean>)
-        | "block";
+      | (({ }: {
+        drag_el: HTMLElement;
+        drag_context: Context;
+        enter_el: HTMLElement;
+        enter_context: Context;
+        debounce_object: ReturnType<typeof debouce>;
+      }) => Promise<boolean>)
+      | "block";
     };
   };
 };
@@ -154,6 +154,16 @@ export async function attach_drag_root(
           enterBoxElements.push({ el: m, box });
         });
 
+    target.dispatchEvent(
+      new CustomEvent("dragroot:enter", {
+        bubbles: true,
+        detail: {
+          target: e.target,
+          context: e.detail.context,
+        },
+      })
+    );
+
     let p = new Promise((res, reject) => {
       if (enter_el.tagName == drag_el.tagName) {
         debounce_object.clear();
@@ -214,15 +224,6 @@ export async function attach_drag_root(
       ...e.detail.context,
     };
 
-    target.dispatchEvent(
-      new CustomEvent("dragroot:enter", {
-        bubbles: true,
-        detail: {
-          target: e.target,
-          context: e.detail.context,
-        },
-      })
-    );
   });
 
   target.addEventListener("pointerup", (e) => {
