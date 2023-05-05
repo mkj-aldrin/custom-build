@@ -47,6 +47,7 @@ attach_drag_root(xRoot, {
 let updateState = {
   start: {
     target: {
+      el: null,
       type: null,
       index: 0
     },
@@ -65,6 +66,7 @@ xRoot.addEventListener("dragroot:down", (e) => {
   const { target, context } = e.detail
 
   updateState.start.target = {
+    el: target,
     type: target.tagName,
     index: target.index
   }
@@ -88,10 +90,35 @@ xRoot.addEventListener("dragroot:enter", (e) => {
 });
 
 xRoot.addEventListener("dragroot:end", (e) => {
-  console.log(updateState);
+  // console.log(updateState);
+
+  const start = updateState.start
+  const end = updateState.end
+
+  const handle = {
+    "X-MODULE": {
+      "X-MODULE": () => {
+        console.log(`m -r c ${start.context['X-CHAIN']}:${start.target.index}`);
+        console.log(`m -i c ${end.context['X-CHAIN']}:${end.target.index}`);
+      },
+      "X-CHAIN": () => {
+        console.log(`m -r c ${start.context['X-CHAIN']}:${start.target.index}`);
+        console.log(`m -a c ${end.target.index}`);
+      }
+    },
+    "X-OUT": {
+      "X-MODULE": () => {
+        console.log(`o -r ${start.target.el.outIndex}`);
+      }
+    }
+  }
+
+  handle[start.target.type]?.[end.target.type]?.()
+
   updateState = {
     start: {
       target: {
+        el: null,
         type: null,
         index: 0
       },

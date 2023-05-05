@@ -5,6 +5,8 @@ import { Xout } from "../app/custom-elements/out";
 import { Xparamter } from "../app/custom-elements/parameter";
 import { Xroot } from "../app/custom-elements/root";
 
+type HTMLIndexElement = HTMLElement & { index?: number }
+
 export declare namespace X {
   type DragElement = HTMLElement & { index?: number; __drag?: {} };
 
@@ -13,7 +15,7 @@ export declare namespace X {
       clientX: number;
       clientY: number;
       context: {
-        [tag: string]: HTMLElement;
+        [tag: string]: HTMLIndexElement;
       };
     }> {
     target: DragElement;
@@ -21,9 +23,9 @@ export declare namespace X {
 
   export interface RootEvent
     extends CustomEvent<{
-      target: HTMLElement;
+      target: HTMLIndexElement;
       context?: {
-        [tag: string]: HTMLElement;
+        [tag: string]: HTMLIndexElement;
       };
     }> {
     target: HTMLElement;
@@ -53,4 +55,4 @@ declare global {
   }
 }
 
-export {};
+export { };

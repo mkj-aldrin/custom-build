@@ -135,6 +135,9 @@ export async function attach_drag_root(
     const enterParent = enter_el.parentElement;
 
     const sameParent = dragParent == enterParent;
+    // if(drag_el != enter_el){
+
+    // }
 
     const insertPosition: InsertPosition =
       sameParent && enterIndex > dragIndex ? "afterend" : "beforebegin";
@@ -154,22 +157,46 @@ export async function attach_drag_root(
           enterBoxElements.push({ el: m, box });
         });
 
-    target.dispatchEvent(
-      new CustomEvent("dragroot:enter", {
-        bubbles: true,
-        detail: {
-          target: e.target,
-          context: e.detail.context,
-        },
-      })
-    );
+    // console.log(drag_el, enter_el);
+
+    // console.log(enter_el);
+
+    // console.log(dragParent, enterParent);
+
+    // console.log(sameParent);
+
+    let sameSame = false
+    if (drag_el.tagName != enter_el.tagName) {
+      function rec(el: HTMLElement) {
+        if (!el.parentElement) return
+        if (el.parentElement == enter_el) {
+          sameSame = true
+          return
+        }
+        rec(el.parentElement)
+      }
+      rec(drag_el)
+    }
+    // console.log(sameSame);
+    if (!sameSame) {
+      target.dispatchEvent(
+        new CustomEvent("dragroot:enter", {
+          bubbles: true,
+          detail: {
+            target: e.target,
+            context: e.detail.context,
+          },
+        })
+      );
+    }
+
 
     let p = new Promise((res, reject) => {
       if (enter_el.tagName == drag_el.tagName) {
         debounce_object.clear();
         enter_el.insertAdjacentElement(insertPosition, drag_el);
         res(true);
-      } else {
+      } else if (!sameSame) {
         !callbackMap[drag_el.tagName]?.enter?.[enter_el.tagName]?.({
           drag_el,
           drag_context,
@@ -179,6 +206,8 @@ export async function attach_drag_root(
         })?.then((state) => {
           res(state);
         }) && res(false);
+      } else {
+        // res(false)
       }
     });
 

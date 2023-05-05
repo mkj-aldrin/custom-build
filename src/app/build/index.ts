@@ -24,7 +24,7 @@ let out_uuid = 0;
 export function build_out({ index = 0 }: { index: number }) {
   const el = document.createElement("x-out");
   el.innerHTML = `
-  <span>out : ${out_uuid++}</span>
+  <span>out : ${el.outIndex}</span>
   `;
   return el;
 }
