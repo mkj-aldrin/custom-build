@@ -14,9 +14,13 @@ export const ani = (obj: { el: HTMLElement; box: DOMRect }) => {
     sy: oldBox.height / newBox.height,
   };
 
+  const offsetDuration = Math.max(0, Math.abs(window.__drag?.dragIndex - obj.el?.index) - 1) * 25
+  // console.log(window.__drag.dragIndex - obj.el.index);
+
+
   const opt: KeyframeAnimationOptions = {
     easing: easingMap.quintOut,
-    duration: 150,
+    duration: 150 + offsetDuration,
     fill: "both",
     composite: "accumulate",
   };

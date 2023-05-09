@@ -2,6 +2,8 @@ import { debouce } from "../../tools/timing";
 import { X } from "../../types/global";
 import { ani, easingMap, move } from "../animations/flip";
 
+window.__drag = {}
+
 export function attach_drag<T extends HTMLElement>(target: T) {
   target.__drag_dragPosition = {
     x: 0,
@@ -114,6 +116,7 @@ export async function attach_drag_root(
         },
       })
     );
+    // window.__drag.dragIndex = drag_el.index
   });
 
   target.addEventListener("drag:enter", async (e) => {
@@ -135,6 +138,7 @@ export async function attach_drag_root(
     const enterParent = enter_el.parentElement;
 
     const sameParent = dragParent == enterParent;
+    window.__drag.dragIndex = enter_el.index
     // if(drag_el != enter_el){
 
     // }
@@ -273,5 +277,6 @@ export async function attach_drag_root(
     drag_context = {};
 
     target.onpointermove = null;
+    window.__drag.dragIndex = null
   });
 }

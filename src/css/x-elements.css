@@ -28,7 +28,7 @@ index-list.chains {
 
 x-module {
   padding: var(--space-1);
-  background: hsl(var(--col-white) / 0.7);
+  background: hsl(var(--col-white) / 0.9);
   box-shadow: 0 0 8px 0 hsl(0 0% 0% / 0.1);
 }
 
