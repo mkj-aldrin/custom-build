@@ -17,6 +17,10 @@
   --col-secondary: 210 80% 60%;
 }
 
+ul {
+  list-style: none;
+}
+
 html,
 body {
   height: 100%;

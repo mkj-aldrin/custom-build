@@ -1,6 +1,9 @@
+import "./menu";
+
 import { build_chain, build_module, build_out } from "./build";
 import "./custom-elements";
 import { attach_drag_root } from "./custom-elements/drag";
+import "./window-state";
 
 const appEl = document.createElement("div");
 document.body.appendChild(appEl);
@@ -15,7 +18,7 @@ chains_list.classList.add("chains");
 
 attach_drag_root(xRoot, {
   "X-CHAIN": {
-    mover: () => { },
+    mover: () => {},
     enter: {
       "X-CHAIN": async () => false,
     },
@@ -49,89 +52,89 @@ let updateState = {
     target: {
       el: null,
       type: null,
-      index: 0
+      index: 0,
     },
-    context: {}
+    context: {},
   },
   end: {
     target: {
       type: null,
-      index: 0
+      index: 0,
     },
-    context: {}
-  }
-}
+    context: {},
+  },
+};
 
 xRoot.addEventListener("dragroot:down", (e) => {
-  const { target, context } = e.detail
+  const { target, context } = e.detail;
 
   updateState.start.target = {
     el: target,
     type: target.tagName,
-    index: target.index
-  }
+    index: target.index,
+  };
 
   for (const key in context) {
-    updateState.start.context[key] = context[key].index
+    updateState.start.context[key] = context[key].index;
   }
 });
 
 xRoot.addEventListener("dragroot:enter", (e) => {
-  const { target, context } = e.detail
+  const { target, context } = e.detail;
 
   updateState.end.target = {
     type: target.tagName,
-    index: target.index
-  }
+    index: target.index,
+  };
 
   for (const key in context) {
-    updateState.end.context[key] = context[key].index
+    updateState.end.context[key] = context[key].index;
   }
 });
 
 xRoot.addEventListener("dragroot:end", (e) => {
   // console.log(updateState);
 
-  const start = updateState.start
-  const end = updateState.end
+  const start = updateState.start;
+  const end = updateState.end;
 
   const handle = {
     "X-MODULE": {
       "X-MODULE": () => {
-        console.log(`m -r c ${start.context['X-CHAIN']}:${start.target.index}`);
-        console.log(`m -i c ${end.context['X-CHAIN']}:${end.target.index}`);
+        console.log(`m -r c ${start.context["X-CHAIN"]}:${start.target.index}`);
+        console.log(`m -i c ${end.context["X-CHAIN"]}:${end.target.index}`);
       },
       "X-CHAIN": () => {
-        console.log(`m -r c ${start.context['X-CHAIN']}:${start.target.index}`);
+        console.log(`m -r c ${start.context["X-CHAIN"]}:${start.target.index}`);
         console.log(`m -a c ${end.target.index}`);
-      }
+      },
     },
     "X-OUT": {
       "X-MODULE": () => {
         console.log(`o -r ${start.target.el.outIndex}`);
-      }
-    }
-  }
+      },
+    },
+  };
 
-  handle[start.target.type]?.[end.target.type]?.()
+  handle[start.target.type]?.[end.target.type]?.();
 
   updateState = {
     start: {
       target: {
         el: null,
         type: null,
-        index: 0
+        index: 0,
       },
-      context: {}
+      context: {},
     },
     end: {
       target: {
         type: null,
-        index: 0
+        index: 0,
       },
-      context: {}
-    }
-  }
+      context: {},
+    },
+  };
 });
 
 [

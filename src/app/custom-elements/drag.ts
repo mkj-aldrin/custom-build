@@ -2,7 +2,7 @@ import { debouce } from "../../tools/timing";
 import { X } from "../../types/global";
 import { ani, easingMap, move } from "../animations/flip";
 
-window.__drag = {}
+window.__drag = {};
 
 export function attach_drag<T extends HTMLElement>(target: T) {
   target.__drag_dragPosition = {
@@ -54,14 +54,14 @@ type CallBackMap = {
     mover?: () => void;
     enter: {
       [y: string]:
-      | (({ }: {
-        drag_el: HTMLElement;
-        drag_context: Context;
-        enter_el: HTMLElement;
-        enter_context: Context;
-        debounce_object: ReturnType<typeof debouce>;
-      }) => Promise<boolean>)
-      | "block";
+        | (({}: {
+            drag_el: HTMLElement;
+            drag_context: Context;
+            enter_el: HTMLElement;
+            enter_context: Context;
+            debounce_object: ReturnType<typeof debouce>;
+          }) => Promise<boolean>)
+        | "block";
     };
   };
 };
@@ -138,7 +138,7 @@ export async function attach_drag_root(
     const enterParent = enter_el.parentElement;
 
     const sameParent = dragParent == enterParent;
-    window.__drag.dragIndex = enter_el.index
+    window.__drag.dragIndex = enter_el.index;
     // if(drag_el != enter_el){
 
     // }
@@ -169,17 +169,17 @@ export async function attach_drag_root(
 
     // console.log(sameParent);
 
-    let sameSame = false
+    let sameSame = false;
     if (drag_el.tagName != enter_el.tagName) {
       function rec(el: HTMLElement) {
-        if (!el.parentElement) return
+        if (!el.parentElement) return;
         if (el.parentElement == enter_el) {
-          sameSame = true
-          return
+          sameSame = true;
+          return;
         }
-        rec(el.parentElement)
+        rec(el.parentElement);
       }
-      rec(drag_el)
+      rec(drag_el);
     }
     // console.log(sameSame);
     if (!sameSame) {
@@ -193,7 +193,6 @@ export async function attach_drag_root(
         })
       );
     }
-
 
     let p = new Promise((res, reject) => {
       if (enter_el.tagName == drag_el.tagName) {
@@ -248,6 +247,7 @@ export async function attach_drag_root(
           opt
         ).onfinish = (e) => {
           drag_el && delete drag_el.__drag?.ani;
+          e.target.effect.target.__drag.newHome = false;
         };
       }
     }
@@ -256,7 +256,6 @@ export async function attach_drag_root(
       ...drag_context,
       ...e.detail.context,
     };
-
   });
 
   target.addEventListener("pointerup", (e) => {
@@ -277,6 +276,6 @@ export async function attach_drag_root(
     drag_context = {};
 
     target.onpointermove = null;
-    window.__drag.dragIndex = null
+    window.__drag.dragIndex = null;
   });
 }

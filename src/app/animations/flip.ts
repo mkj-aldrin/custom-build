@@ -14,9 +14,8 @@ export const ani = (obj: { el: HTMLElement; box: DOMRect }) => {
     sy: oldBox.height / newBox.height,
   };
 
-  const offsetDuration = Math.max(0, Math.abs(window.__drag?.dragIndex - obj.el?.index) - 1) * 25
-  // console.log(window.__drag.dragIndex - obj.el.index);
-
+  const offsetDuration =
+    Math.max(0, Math.abs(window.__drag?.dragIndex - obj.el?.index) - 1) * 50;
 
   const opt: KeyframeAnimationOptions = {
     easing: easingMap.quintOut,
@@ -25,22 +24,19 @@ export const ani = (obj: { el: HTMLElement; box: DOMRect }) => {
     composite: "accumulate",
   };
 
-  if (posDiff.x || posDiff.y || posDiff.sy) {
-  }
-
-  !obj.el.__drag && (obj.el.__drag = {})
-  obj.el.__drag.ani = true
+  !obj.el.__drag && (obj.el.__drag = {});
+  obj.el.__drag.ani = true;
 
   obj.el.animate(
-    [{ transform: `translate(${posDiff.x}px,${posDiff.y}px)`, }, {}],
+    [{ transform: `translate(${posDiff.x}px,${posDiff.y}px)` }, {}],
     opt
   ).onfinish = (e) => {
-    // delete obj.el.ani
+    delete obj.el.ani;
   };
 };
 
 export function move(
-  pos: { x: number, y: number },
+  pos: { x: number; y: number },
   target: HTMLElement,
   reset = false
 ) {
@@ -51,12 +47,24 @@ export function move(
   };
 
   const v = {
-    x: Math.max(Math.min((pos.x - target.__drag_dragPossition?.x) * 0.0625, 5), -5),
-    y: Math.max(Math.min((pos.y - target.__drag_dragPossition?.y) * 0.0625, 5), -5),
+    x: Math.max(
+      Math.min((pos.x - target.__drag_dragPossition?.x) * 0.0625, 5),
+      -5
+    ),
+    y: Math.max(
+      Math.min((pos.y - target.__drag_dragPossition?.y) * 0.0625, 5),
+      -5
+    ),
   };
 
   target.animate(
-    [{ transform: reset ? "translate(0px,0px)" : `translate(${v.x}px,${v.y}px)` }],
+    [
+      {
+        transform: reset
+          ? "translate(0px,0px)"
+          : `translate(${v.x}px,${v.y}px)`,
+      },
+    ],
     opt
   );
 }

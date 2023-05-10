@@ -5,7 +5,7 @@ import { Xout } from "../app/custom-elements/out";
 import { Xparamter } from "../app/custom-elements/parameter";
 import { Xroot } from "../app/custom-elements/root";
 
-type HTMLIndexElement = HTMLElement & { index?: number }
+type HTMLIndexElement = HTMLElement & { index?: number };
 
 export declare namespace X {
   type DragElement = HTMLElement & { index?: number; __drag?: {} };
@@ -32,6 +32,13 @@ export declare namespace X {
   }
 }
 declare global {
+  interface Window {
+    __state: {
+      menu: {
+        ctrl: boolean;
+      };
+    };
+  }
   interface HTMLElementEventMap {
     pointerdown: PointerEvent & {
       __detail: {
@@ -55,4 +62,4 @@ declare global {
   }
 }
 
-export { };
+export {};
